@@ -7,7 +7,13 @@ tracker = GazeTracker()
 
 for i in range(100):
     # Read data every second, result is a list of tuples (x, y)
-    print(tracker.get_movement())
+    points = tracker.get_movement()
+    print(points)
+    with open("data.txt", "a") as f:
+        for x, y in points:
+            f.write(f"{x},{y}\n")
+
+
     time.sleep(1)
 
 

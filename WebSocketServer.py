@@ -3,7 +3,7 @@ import websockets
 import json
 import time
 from collections import deque
-import TobiiEyeTracker
+from GazeTracker import GazeTracker
 
 WEBSOCKET_PORT = 8765
 INTERVAL = 0.1  # Update interval in seconds
@@ -14,10 +14,7 @@ class WebSocketGazeTracker:
         self.clients = set()
         self.gaze_queue = deque(maxlen=CACHE_SIZE)
         self.last_location = None
-        try: 
-            TobiiEyeTracker.init()
-        except:
-            pass
+        self.tracker = GazeTracker()
         print("Eye tracker initialized")
 
     async def register(self, websocket):
@@ -34,7 +31,7 @@ class WebSocketGazeTracker:
         return movements
 
     def get_current_location(self):
-        gaze_data = TobiiEyeTracker.getBuffer()
+        gaze_data = self.tracker.get_movement() 
         gaze_data_time = [(x,y,int(time.time() * 1000)) for x,y in gaze_data]
         if gaze_data:
             self.last_location = (gaze_data[-1][0], gaze_data[-1][1]) # Get the most recent point
